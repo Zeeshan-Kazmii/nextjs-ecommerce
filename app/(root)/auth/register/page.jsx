@@ -18,8 +18,10 @@ import {z} from 'zod'
 import { FaRegEyeSlash,FaRegEye } from 'react-icons/fa'
 import Link from 'next/link'
 import { WEBSITE_LOGIN } from '@/routes/WebsiteRoute'
+import { register } from 'next/dist/next-devtools/userspace/pages/pages-dev-overlay-setup'
+import axios from 'axios'
 const RegisterPage = () => {
-    const formSchema = zSchema.pick({ email: true, password: true }).extend({
+    const formSchema = zSchema.pick({ name: true, email: true, password: true }).extend({
         confirmPassword: z.string()})
         .refine((data) => data.password === data.confirmPassword, {
             message: "Passwords do not match",
@@ -28,6 +30,7 @@ const RegisterPage = () => {
     const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -38,7 +41,19 @@ const RegisterPage = () => {
   const [isTypePassword, setIsTypePassword] = useState(true)
 
 const handleRegisterSubmit = async (values) => {
-    console.log(values)
+    try {
+      setLoading(true)
+      const { data: registerResponse} = await axios.post("/api/auth/register", values)
+      if(!registerResponse.success) {
+        throw new Error(registerResponse.message)
+      }
+      form.reset()
+      alert(registerResponse.message)
+    } catch (error) {
+      alert(error.message)
+    } finally {
+      setLoading(false)
+    }
 }
 
   return (
