@@ -4,7 +4,7 @@ import { response } from "@/lib/helperFunction";
 import UserModel from "@/models/User.model";
 import { emailVerificationLink } from "@/email/emailVerificationLink";
 import { SignJWT } from "jose";
-import { sendEmail } from "@/lib/sendMail";
+import { sendMail } from "@/lib/sendMail";
 export async function POST(request) {
     try {
         await connectDB();
@@ -35,7 +35,7 @@ export async function POST(request) {
         const secret = new TextEncoder().encode(process.env.SECRET_KEY);
         const token = await new SignJWT({ userId: NewRegistration._id.toString() }).setIssuedAt().setExpirationTime('1h').setProtectedHeader({ alg: 'HS256' }).sign(secret);
 
-        await sendEmail('Email Verification request from Zeeshan', email, emailVerificationLink(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/verify-email/${token}`));
+        await sendMail('Email Verification request from Zeeshan', email, emailVerificationLink(`${process.env.NEXT_PUBLIC_BASE_URL}/auth/verify-email/${token}`));
         return response(true,200, 'Registration successful. Please check your email to verify your email address.');
 
     } catch (error) {

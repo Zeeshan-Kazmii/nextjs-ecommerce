@@ -20,6 +20,7 @@ import Link from 'next/link'
 import { WEBSITE_LOGIN } from '@/routes/WebsiteRoute'
 import { register } from 'next/dist/next-devtools/userspace/pages/pages-dev-overlay-setup'
 import axios from 'axios'
+import { showToast } from '@/lib/showTost'
 const RegisterPage = () => {
     const formSchema = zSchema.pick({ name: true, email: true, password: true }).extend({
         confirmPassword: z.string()})
@@ -48,9 +49,9 @@ const handleRegisterSubmit = async (values) => {
         throw new Error(registerResponse.message)
       }
       form.reset()
-      alert(registerResponse.message)
+      showToast('success', registerResponse.message)
     } catch (error) {
-      alert(error.message)
+      showToast('error', error.message)
     } finally {
       setLoading(false)
     }

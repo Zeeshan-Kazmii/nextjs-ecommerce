@@ -18,6 +18,9 @@ import {z} from 'zod'
 import { FaRegEyeSlash,FaRegEye } from 'react-icons/fa'
 import Link from 'next/link'
 import { WEBSITE_REGISTER } from '@/routes/WebsiteRoute'
+import axios from 'axios'
+import { showToast } from '@/lib/showTost'
+import OTPVerification from '@/components/Application/OTPVerification'
 const LoginPage = () => {
     const formSchema = zSchema.pick({ email: true }).extend({password: z.string().min(3, 'Password is required')})
     const form = useForm({
@@ -29,35 +32,42 @@ const LoginPage = () => {
   })
 
   const [loading, setLoading] = useState(false)
+  const [otpVerificationLoading, setOtpVerificationLoading] = useState(false)
   const [isTypePassword, setIsTypePassword] = useState(true)
-
+  const [otpEmail, setOtpEmail] = useState('')
 const handleLoginSubmit = async (values) => {
-//   try {
-//     setLoading(true)
+try {
+      setLoading(true)
+      const { data: loginResponse} = await axios.post("/api/auth/login", values)
+      if(!loginResponse.success) {
+        throw new Error(loginResponse.message)
+      }
 
-    // console.log("Form values:", values)
+      setOtpEmail(values.email)
+      form.reset()
+      showToast('success', loginResponse.message)
+    } catch (error) {
+      showToast('error', error.message)
+    } finally {
+      setLoading(false)
+    }
+}
 
-//     const res = await fetch("/api/login", {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify(values),
-//     })
-
-//     const data = await res.json()
-
-//     if (!res.ok) {
-//       throw new Error(data.message || "Login failed")
-//     }
-
-//     console.log("Login success:", data)
-
-//   } catch (error) {
-//     console.error(error.message)
-//   } finally {
-//     setLoading(false)
-//   }
+// otp verification
+const handleotpVerification = async (values)=>{
+  try {
+      setOtpVerificationLoading(true)
+      const { data: otpResponse} = await axios.post("/api/auth/verify-otp", values)
+      if(!otpResponse.success) {
+        throw new Error(otpResponse.message)
+      }
+      setOtpEmail("")
+      showToast('success', otpResponse.message)
+    } catch (error) {
+      showToast('error', error.message)
+    } finally {
+      setOtpVerificationLoading(false)
+    }
 }
 
   return (
@@ -66,7 +76,10 @@ const handleLoginSubmit = async (values) => {
             <div className="flex justify-center">
 <Image src={Logo} alt="logo" className="max-w-[150px]" />
       </div>
-            <div className='text-center'>
+      {!otpEmail 
+      ? 
+      <>
+      <div className='text-center'>
                 <h1 className='text-3xl font-bold'>Login Into Account</h1>
                 <p>Login into your account by filling out the form below.</p>
             </div>
@@ -132,6 +145,11 @@ const handleLoginSubmit = async (values) => {
 </div>
       </form>
             </div>
+      </>
+       : 
+      <OTPVerification email={otpEmail} loading={otpVerificationLoading} onSubmit={handleotpVerification} />
+      }
+            
         </CardContent>
     </Card>
   )
