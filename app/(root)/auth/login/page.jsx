@@ -21,9 +21,12 @@ import { WEBSITE_REGISTER } from '@/routes/WebsiteRoute'
 import axios from 'axios'
 import { showToast } from '@/lib/showTost'
 import OTPVerification from '@/components/Application/OTPVerification'
+import { useDispatch } from 'react-redux'
+import { login } from '@/store/reducer/authReducer'
 const LoginPage = () => {
-    const formSchema = zSchema.pick({ email: true }).extend({password: z.string().min(3, 'Password is required')})
-    const form = useForm({
+  const dispatch = useDispatch() 
+  const formSchema = zSchema.pick({ email: true }).extend({password: z.string().min(3, 'Password is required')})
+  const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
@@ -63,6 +66,9 @@ const handleotpVerification = async (values)=>{
       }
       setOtpEmail("")
       showToast('success', otpResponse.message)
+
+      dispatch(login(otpResponse.data))
+
     } catch (error) {
       showToast('error', error.message)
     } finally {

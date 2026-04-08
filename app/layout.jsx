@@ -1,3 +1,4 @@
+import GlobalProvider from "@/components/Application/GlobalProvider";
 import "./globals.css";
 import { Assistant } from "next/font/google";
 import { ToastContainer } from "react-toastify";
@@ -18,9 +19,11 @@ export default function RootLayout({ children }) {
       lang="en"
     >
       <body className={`${assistantFont.className}antialiased`}>
-        <ToastContainer />
-        {children}
-        </body>
+        <GlobalProvider>
+          <ToastContainer />
+          {children}
+        </GlobalProvider>
+      </body>
     </html>
   );
 }
