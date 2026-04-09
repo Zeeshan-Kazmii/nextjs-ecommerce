@@ -17,7 +17,7 @@ import ButtonLoading from '@/components/Application/ButtonLoading'
 import {z} from 'zod'
 import { FaRegEyeSlash,FaRegEye } from 'react-icons/fa'
 import Link from 'next/link'
-import { WEBSITE_REGISTER } from '@/routes/WebsiteRoute'
+import { WEBSITE_REGISTER, WEBSITE_RESETPASSWORD } from '@/routes/WebsiteRoute'
 import axios from 'axios'
 import { showToast } from '@/lib/showTost'
 import OTPVerification from '@/components/Application/OTPVerification'
@@ -146,7 +146,7 @@ const handleotpVerification = async (values)=>{
   <Link href={WEBSITE_REGISTER} className="text-primary underline">Register here</Link>
 </div>
 <div className='mt-2'>
-  <Link href="" className="text-primary underline">Forgot password?</Link>
+  <Link href={WEBSITE_RESETPASSWORD} className="text-primary underline">Forgot password?</Link>
 </div>
 </div>
       </form>
